@@ -26,26 +26,28 @@ from nova import exception
 from nova.i18n import _, _LE, _LW
 from nova.network import base_api
 from nova.network import model as network_model
-from nova.network import neutronv2
 from nova.network.neutronv2.api import API as neutronv2_api
 from nova.network.neutronv2 import constants
 from nova import objects
-from nova.openstack.common import excutils
-from nova.openstack.common import lockutils
-from nova.openstack.common.gettextutils import _
-from nova.openstack.common import log as logging
-from nova.openstack.common import uuidutils
-from nova.pci import pci_manager
-from nova.pci import pci_request
-from nova.pci import pci_whitelist
+
+from oslo_utils import excutils
+from oslo_concurrency import lockutils
+from oslo_utils._i18n import _
+from oslo_log import log as logging
+from oslo_utils import uuidutils
+from nova.pci import manager
+from nova.pci import request
+from nova.pci import whitelist
+
+from nova.network.neutronv2 import api as neutronv2
 
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 class API(neutronv2_api):
     """contrail network API class Derived from nova neutronv2 API class."""
 
-    def __init__(self):
-        super(API, self).__init__()
+    def __init__(self,skip_policy_check=False):
+        super(API, self).__init__(skip_policy_check)
 
     def validate_networks(self, context, requested_networks, num_instances):
         """Validate that the tenant can use the requested networks.
